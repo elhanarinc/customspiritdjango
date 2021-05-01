@@ -59,6 +59,8 @@ INSTALLED_APPS = [
 
     'djconfig',
     'haystack',
+
+    'health_check',
 ]
 
 MIDDLEWARE = [

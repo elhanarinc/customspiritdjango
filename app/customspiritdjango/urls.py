@@ -13,6 +13,10 @@ admin.site.login = login_required(admin.site.login)
 
 
 urlpatterns = [
+    # healthcheck endpoint
+    re_path(r'^healthcheck', include('health_check.urls')),
+
+    # normal endpoints
     re_path(r'^', include(spirit.urls)),
 
     # This is the default django admin
