@@ -20,8 +20,7 @@ class CdkStack extends cdk.Stack {
     super(scope, id, props);
 
     // get environment and application info
-    const clientName = props.clientName;
-    const clientPrefix = `${clientName}-${props.environment}`;
+    const clientPrefix = `${props.clientName}-${props.environment}`;
 
     // create dedicated VPC
     const vpc = new ec2.Vpc(this, `${clientPrefix}-vpc`, { maxAZs: 2 });
@@ -81,7 +80,7 @@ class CdkStack extends cdk.Stack {
         new route53targets.LoadBalancerTarget(alb)
       ),
       ttl: cdk.Duration.seconds(300),
-      comment: `${props.environment} alb record`,
+      comment: `${props.clientPrefix} alb record`,
       zone: zone
     });
 
