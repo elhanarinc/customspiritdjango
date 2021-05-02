@@ -3,8 +3,6 @@ const ecs = require('@aws-cdk/aws-ecs');
 const ec2 = require('@aws-cdk/aws-ec2');
 const elasticloadbalancing = require('@aws-cdk/aws-elasticloadbalancingv2');
 
-const ecr = require('@aws-cdk/aws-ecr');
-const iam = require('@aws-cdk/aws-iam');
 const route53 = require('@aws-cdk/aws-route53');
 const route53targets = require('@aws-cdk/aws-route53-targets');
 const certificatemanager = require('@aws-cdk/aws-certificatemanager');
@@ -35,7 +33,7 @@ class CdkStack extends cdk.Stack {
     cluster.addCapacity(`${clientPrefix}-cluster-capacity`, {
       instanceType: new ec2.InstanceType('t2.micro'),
       minCapacity: 1,
-      maxCapacity: 2
+      maxCapacity: 3
     });
 
     // create task definition
