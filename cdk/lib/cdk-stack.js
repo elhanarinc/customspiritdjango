@@ -93,19 +93,10 @@ class CdkStack extends cdk.Stack {
     );
 
     // create http listener for the application load balancer
-    const httpListener = alb.addListener(`${clientPrefix}-http-listener`, {
+    alb.addListener(`${clientPrefix}-http-listener`, {
       port: 80,
       open: true,
-      defaultAction: elasticloadbalancing.ListenerAction.fixedResponse(200)
-    });
-
-    // create listener rule
-    const httpListenerRule = new elasticloadbalancing.ApplicationListenerRule(this, `${clientPrefix}-http-listener-rule`, {
-      listener: httpListener,
-      conditions: [
-        elasticloadbalancing.ListenerCondition.pathPatterns(['*']),
-      ],
-      action: elasticloadbalancing.ListenerAction.redirect({
+      defaultAction: elasticloadbalancing.ListenerAction.redirect({
         protocol: 'HTTPS',
         port: '443',
         host: '#{host}',
@@ -113,7 +104,6 @@ class CdkStack extends cdk.Stack {
         query: '#{query}',
         statusCode: 'HTTP_301'
       }),
-      priority: 1
     });
 
     // create https listener for the application load balancer
