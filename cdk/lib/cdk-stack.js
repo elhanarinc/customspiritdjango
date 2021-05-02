@@ -36,7 +36,7 @@ class CdkStack extends cdk.Stack {
     cluster.addCapacity(`${clientPrefix}-cluster-capacity`, {
       instanceType: new ec2.InstanceType('t2.micro'),
       minCapacity: 1,
-      maxCapacity: 1
+      maxCapacity: 2
     });
 
     // create task definition
@@ -44,9 +44,13 @@ class CdkStack extends cdk.Stack {
 
     // create container with docker image
     const container = taskDefinition.addContainer(`${clientPrefix}-container`, {
-      image: ecs.ContainerImage.fromAsset(`${__dirname}/../../app`),
+      image: ecs.ContainerImage.fromAsset(`${__dirname}/../../app`, {
+        buildArgs: {
+          'DJANGO_ENV': 'PROD'
+        }
+      }),
       memoryLimitMiB: 512,
-      cpu: 256
+      cpu: 512
     });
 
     // add port 80 to container

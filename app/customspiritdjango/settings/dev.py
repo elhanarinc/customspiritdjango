@@ -9,15 +9,33 @@
 
 from .base import *
 
+import environ
+import os
 
-DEBUG = True
+DJANGO_ENV = os.environ.get('DJANGO_ENV')
+
+env = environ.Env()
+
+if DJANGO_ENV == 'PROD':
+    env.read_env(env.str('ENV_PATH', '.env.prod'))
+else:
+    env.read_env(env.str('ENV_PATH', '.env.dev'))
+
+SECRET_KEY = env('SECRET_KEY')
+
+DB_NAME = env('POSTGRE_NAME')
+DB_USER = env('POSTGRE_USER')
+DB_PASSWORD = env('POSTGRE_PASSWORD')
+DB_HOST = env('POSTGRE_HOST')
+DB_PORT = env('POSTGRE_PORT')
+
+DEBUG = env('DEBUG')
 
 TEMPLATES[0]['OPTIONS']['debug'] = True
 # TEMPLATES[0]['OPTIONS']['string_if_invalid'] = '\{\{%s\}\}'  # Some Django templates relies on this being the default
 
 ADMINS = (('John', 'john@example.com'), )  # Log email to console when DEBUG = False
 
-SECRET_KEY = "DEV"
 
 ALLOWED_HOSTS = ['*']
 
@@ -30,9 +48,17 @@ ALLOWED_HOSTS = ['*']
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
 

@@ -1,4 +1,6 @@
 #!/bin/bash
+
+python3 manage.py makemigrations                     # Start make migrations
 python3 manage.py migrate                            # Apply database migrations
 python3 manage.py collectstatic --clear --noinput    # clearstatic files
 python3 manage.py collectstatic --noinput            # collect static files
@@ -7,6 +9,7 @@ python3 manage.py collectstatic --noinput            # collect static files
 touch /usr/src/logs/gunicorn.log
 touch /usr/src/logs/access.log
 
+# Showing logs on terminal
 tail -n 0 -f /usr/src/logs/*.log &
 
 # Start Gunicorn processes
