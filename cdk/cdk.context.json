@@ -3,5 +3,9 @@
     "eu-central-1a",
     "eu-central-1b",
     "eu-central-1c"
-  ]
+  ],
+  "hosted-zone:account=500158719390:domainName=cloud39750.com:region=eu-central-1": {
+    "Id": "/hostedzone/Z08516253OI5CYNKF83KJ",
+    "Name": "cloud39750.com."
+  }
 }

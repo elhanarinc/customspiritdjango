@@ -65,16 +65,68 @@ class CdkStack extends cdk.Stack {
       internetFacing: true
     });
 
-    // create listener for the application load balancer
-    const listener = alb.addListener(`${clientPrefix}-listener`, {
-       port: 80,
-       open: true,
-       defaultAction: elasticloadbalancing.ListenerAction.fixedResponse(200)
+    // fetch route53 zone
+    const zone = route53.HostedZone.fromLookup(this, `${clientPrefix}-zone`, {
+      domainName: props.domain
+    });
+
+    // create new record for application load balancer
+    new route53.ARecord(this, `${clientPrefix}-domain`, {
+      recordName: `${props.domain}`,
+      target: route53.RecordTarget.fromAlias(
+        new route53targets.LoadBalancerTarget(alb)
+      ),
+      ttl: cdk.Duration.seconds(300),
+      comment: `${props.environment} alb record`,
+      zone: zone
+    });
+
+    // create ssl cert for the domain
+    const cert = new certificatemanager.Certificate(
+      this,
+      `${clientPrefix}-cert`,
+      {
+        domainName: props.domain,
+        subjectAlternativeNames: [`*.${props.domain}`],
+        validation: certificatemanager.CertificateValidation.fromDns(zone)
+      }
+    );
+
+    // create http listener for the application load balancer
+    const httpListener = alb.addListener(`${clientPrefix}-http-listener`, {
+      port: 80,
+      open: true,
+      defaultAction: elasticloadbalancing.ListenerAction.fixedResponse(200)
     });
 
     // create listener rule
-    const listenerRule = new elasticloadbalancing.ApplicationListenerRule(this, `${clientPrefix}-listener-rule`, {
-      listener,
+    const httpListenerRule = new elasticloadbalancing.ApplicationListenerRule(this, `${clientPrefix}-http-listener-rule`, {
+      listener: httpListener,
+      conditions: [
+        elasticloadbalancing.ListenerCondition.pathPatterns(['*']),
+      ],
+      action: elasticloadbalancing.ListenerAction.redirect({
+        protocol: 'HTTPS',
+        port: '443',
+        host: '#{host}',
+        path: '/#{path}',
+        query: '#{query}',
+        statusCode: 'HTTP_301'
+      }),
+      priority: 1
+    });
+
+    // create https listener for the application load balancer
+    const httpsListener = alb.addListener(`${clientPrefix}-https-listener`, {
+       port: 443,
+       open: true,
+       certificates: [cert],
+       defaultAction: elasticloadbalancing.ListenerAction.fixedResponse(200)
+    });
+
+    // create https listener rule
+    const httpsListenerRule = new elasticloadbalancing.ApplicationListenerRule(this, `${clientPrefix}-https-listener-rule`, {
+      listener: httpsListener,
       conditions: [
         elasticloadbalancing.ListenerCondition.pathPatterns(['*']),
       ],
@@ -106,13 +158,7 @@ class CdkStack extends cdk.Stack {
     targetGroupHttp.addTarget(service);
 
     // add target group to listener rule
-    listenerRule.configureAction(elasticloadbalancing.ListenerAction.forward([targetGroupHttp]));
-
-    // export load balancer's dns
-    this.externalDNS = new cdk.CfnOutput(this, 'load balancer DNS', {
-      exportName: 'custom-spirit-django',
-      value: alb.loadBalancerDnsName
-    });
+    httpsListenerRule.configureAction(elasticloadbalancing.ListenerAction.forward([targetGroupHttp]));
   }
 }
 
