@@ -62,14 +62,14 @@ After these commands you can access custom version of spirit using:
     PROJECT_ENV=<project-env>
     DOMAIN=<domain-that-you-own-and-want-to-deploy>
     ```
-
+    
     **App folder** should be looked like this:
 
-    ![](app.png)
+    ![](https://user-images.githubusercontent.com/7025275/116869409-5d099100-ac19-11eb-815d-7ccd4c800d19.png)
 
     **Cdk folder** should be looked like this:
 
-    ![](cdk.png)
+    ![](https://user-images.githubusercontent.com/7025275/116869433-6d217080-ac19-11eb-9cd5-c2868d4193e2.png)
 
 5. After you installed necessary tools and configure *.env* files you can deploy your stack by using these commands:
 
