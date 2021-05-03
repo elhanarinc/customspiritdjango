@@ -75,6 +75,7 @@ After these commands you can access custom version of spirit using:
 
     ```
     cd <this-directory>/cdk
+    npm i
     cdk bootstrap
     cdk synth
     cdk deploy
