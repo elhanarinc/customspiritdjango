@@ -20,6 +20,5 @@ new CdkStack(app, 'CdkStack', {
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
   clientName: process.env.CLIENT_NAME,
   environment: process.env.PROJECT_ENV,
-  domain: process.env.DOMAIN,
-  hostedZoneId: process.env.ZONEID
+  domain: process.env.DOMAIN
 });
